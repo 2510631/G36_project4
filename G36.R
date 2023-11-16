@@ -12,16 +12,37 @@
 
 
 netup = function (d){
+  # The purpose of this function is to initialize a neural network with the 
+  # specified layer sizes, providing initial values for nodes, weight matrices, and offset vectors.
+  
+  # Input:
+  # d: A vector specifying the number of nodes in each layer of the neural network.
+  
+  # Output:
+  # A list containing:
+  # 'h': A list of vectors representing the node values for each layer.
+  # 'W': A list of matrices representing the weight matrices linking consecutive layers.
+  # 'b': A list of vectors representing the offset vectors linking consecutive layers.
+  # 'd': The input vector specifying the layer sizes.
+  
+  
+  
+  # Initialize lists for nodes 'h', weight matrices 'W', and offset vectors 'b'
   h <- W <- b <- list()
   
-  for( i in 1:(length(d) - 1)){
+  # Iterate through layers to initialize nodes, weight matrices, and offset vectors
+  for ( i in 1:(length(d) - 1)){
     
-    h[i]=list(rep(0, d[i]))
+    # Initialize node values for layer i
+    h[i] <- list(rep(0, d[i]))
     
-    W[i]=list(matrix(runif(d[i] * d[i+1], 0, 0.2),d[i+1]))
+    # Initialize weight matrix W[i] with U(0, 0.2) random deviates
+    W[i] <- list(matrix(runif(d[i] * d[i+1], 0, 0.2), d[i+1]))
     
-    b[i]=list(runif(d[i+1], 0, 0.2))    
+    # Initialize offset vector b[i] with U(0, 0.2) random deviates
+    b[i] <- list(runif(d[i+1], 0, 0.2))    
   }
+  # Return a list containing nodes 'h', weight matrices 'W', offset vectors 'b', and the layer sizes 'd'
   return(list(h = h, W = W, b = b, d = d))
 }
 
