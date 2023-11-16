@@ -25,3 +25,22 @@ forward= function(nn,inp){
   }
   return(nn=list(h=h,W=W,b=b,d=d)) 
 }
+
+backward=function(nn,k){ 
+  h=nn$h ;W=nn$W ;b=nn$b ;d=nn$d
+  output=unlist(h[length(d)])
+  dW=dh=db=list()
+  for (i in length(d):1){
+    if(i==length(d)){
+      Dh=exp(output)/sum(exp(output))
+      Dh[k]=Dh[k]-1
+      dh[i]=list(Dh)
+    } else {
+      d_l1=unlist(dh[i+1])*(unlist(h[i+1])>0)
+      dh[i]=list(t(matrix(unlist(W[i]),d[i+1]))%*%d_l1)
+      dW[i]=list(matrix(d_l1,d[i+1])%*%matrix((unlist(h[i])),ncol=d[i]))
+      db[i]=list(d_l1)
+    }
+  }
+  return(list(h=h,W=W,b=b,d=d,dh=dh,dW=dW,db=db))
+}
