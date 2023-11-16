@@ -44,3 +44,43 @@ backward=function(nn,k){
   }
   return(list(h=h,W=W,b=b,d=d,dh=dh,dW=dW,db=db))
 }
+
+train=function(nn,inp,k,eta=.01,mb=10,nstep=10000){ 
+  for (i in 1:nstep){
+    index=sample(dim(inp)[1],mb)
+    data_train=inp[index,]
+    k_train=k[index]
+    d=nn$d ;b=nn$b ;W=nn$W 
+    aver_dW=list()
+    aver_db=list()
+    for (j in 1:length(b)){
+      aver_dW[j]=list(matrix(0,d[j],d[j+1]))
+      aver_db[j]=list(rep(0,d[j+1]))
+    }
+    for (s in 1:mb){
+      nn_1=forward(nn,data_train[s,])
+      nn_1=backward(nn_1,k_train[s])
+      dW=nn_1$dW ;db=nn_1$db
+      for ( j in 1:length(b)){ 
+        aver_dW[j]=list(matrix(unlist(dW[j]),d[j])/mb+matrix(unlist(aver_dW[j]),d[j]))
+        aver_db[j]=list(unlist(db[j])/mb+unlist(aver_db[j]))
+      }
+    }
+    for (j in 1:length(b)){
+      W[j]=list(matrix(unlist(W[j]),d[j])-eta*matrix(unlist(aver_dW[j]),d[j]))
+      b[j]= list(unlist(b[j])-eta*unlist(aver_db[j]))
+    }
+    nn$W=W ;nn$b=b
+  }  
+  return(nn)
+}
+predict=function(nn,inp){
+  prediction=c()
+  for (i in 1:dim(inp)[1]){
+    h=forward(nn,inp[i,])$h
+    h=unlist(h[length(h)])
+    p=exp(h)/sum(exp(h))
+    prediction[i]= which.max(p)
+  }
+  return(prediction)
+}
