@@ -87,21 +87,56 @@ forward <- function(nn,inp){
 }
 
 backward=function(nn,k){ 
-  h=nn$h ;W=nn$W ;b=nn$b ;d=nn$d
+  # The purpose of the backward function is to compute derivatives of the loss 
+  # corresponding to output class k for a neural network, including derivatives 
+  # with respect to nodes, weights, and offsets.
+  
+  # Input:
+  # nn: A network list containing information about the neural network, as returned by the forward function.
+  # k: The output class for which the derivatives are computed.
+  
+  # Output:
+  # An updated network list containing the computed derivatives dh, dW, and db.
+  
+  
+  # Obtain elements needed from the network list nn.
+  h <- nn$h
+  W <- nn$W
+  b <- nn$b
+  d <- nn$d
+  
+  # Get the output values for the last layer
   output=unlist(h[length(d)])
+  
+  # Initialize lists for derivatives dh, dW, and db
   dW=dh=db=list()
+  
+  # Iterate through layers in reverse order to compute derivatives using 
+  # back-propagation
   for (i in length(d):1){
+    
     if(i==length(d)){
-      Dh=exp(output)/sum(exp(output))
-      Dh[k]=Dh[k]-1
-      dh[i]=list(Dh)
+      
+      # Compute the derivative of the loss for output class k w.r.t. the nodes 
+      # in the output layer.
+      Dh <- exp(output) / sum(exp(output))
+      Dh[k] <- Dh[k]-1
+      dh[i] <- list(Dh)
     } else {
+      
+      # Compute derivatives w.r.t. nodes, weights, and offsets for each layer 
+      # using back-propagation
       d_l1=unlist(dh[i+1])*(unlist(h[i+1])>0)
+      
       dh[i]=list(t(matrix(unlist(W[i]),d[i+1]))%*%d_l1)
-      dW[i]=list(matrix(d_l1,d[i+1])%*%matrix((unlist(h[i])),ncol=d[i]))
+      
+      dW[i]=list(matrix(d_l1,d[i+1]) %*% matrix((unlist(h[i])),ncol=d[i]))
+      
       db[i]=list(d_l1)
     }
   }
+  
+  # Return the updated network list with derivatives
   return(list(h=h,W=W,b=b,d=d,dh=dh,dW=dW,db=db))
 }
 
