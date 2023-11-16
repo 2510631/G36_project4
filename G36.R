@@ -218,29 +218,72 @@ train=function(nn,inp,k,eta=.01,mb=10,nstep=10000){
 }
 
 
-
 predict=function(nn,inp){
+  # The aim of the 'predict' function is to use a trained neural network to predict
+  # the class labels of input data samples.
+  # This function takes the node values of the output layer obtained through a 
+  # forward pass and converts them into probabilities. 
+  # The most probable one is then selected as the predicted class.
+  
+  # Input:
+  # nn: A trained neural network model, containing useful parameters.
+  # inp: Input data matrix where each row represents a data sample, and columns represent features.
+  
+  # Output:
+  # prediction: A vector containing the predicted class labels for each input data sample.
+  
+  
+  
+  # Set up an empty vector to store predictions later
   prediction=c()
+  
+  
   for (i in 1:dim(inp)[1]){
+    
+    # Do the forward propagation to get the node values of the output layer
     h=forward(nn,inp[i,])$h
+    
+    # Extract the output layer node values and convert to a vector
     h=unlist(h[length(h)])
+    
+    # Obtain the probabilities
     p=exp(h)/sum(exp(h))
+    
+    # Set the predicted class as the most probable one.
     prediction[i]= which.max(p)
   }
+  
+  # Return the vector of predictions
   return(prediction)
 }
 
+
+# Set the network to be 4,8,7,3
 d=c(4,8,7,3)
+
+# Assign numeric labels to iris species
 levels(iris[,5])=1:3
 label=as.numeric(iris[,5])
+
+# Obtain training data by excluding every 5th row
 train_data=iris[-seq(5,150,5),1:4]
 train_k=label[-seq(5,150,5)]
+
+# Obtain test data by using every 5th row
 test_data=iris[seq(5,150,5),1:4]
 test_k=label[seq(5,150,5)]
+
+# Set seed for reporducibility during training
 set.seed(6666)
+
+# Train the neural network using stochastic gradient descent
 nn=train(netup(d),train_data,train_k,nstep=10000)
 print(nn)
+
+# Predict iris species on the test data by using the trained network
 prediction=predict(nn,test_data)
 print(prediction)
+
+# Calculate the accuracy
 accuracy=mean(prediction==test_k)
 print(accuracy)
