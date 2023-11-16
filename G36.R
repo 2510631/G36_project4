@@ -13,3 +13,15 @@ netup = function (d){
   }
   return(list(h = h, W = W, b = b, d = d))
 }
+
+
+forward= function(nn,inp){
+  W=nn$W ;b=nn$b ;d=nn$d ;h=nn$h
+  h[1]=list(inp)
+  for(i in 1:length(b)){
+    z=matrix(unlist(W[i]),d[i+1])%*%unlist(h[i])+unlist(b[i])
+    z[z<0]=0
+    h[i+1]=list(z)
+  }
+  return(nn=list(h=h,W=W,b=b,d=d)) 
+}
