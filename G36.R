@@ -141,34 +141,84 @@ backward=function(nn,k){
 }
 
 train=function(nn,inp,k,eta=.01,mb=10,nstep=10000){ 
+  # The aim of the train function is to train a neural network using stochastic gradient descent.
+  # It performs iterations over the input data with minibatches, computes the gradients, 
+  # and updates the parameters of the neural network to minimize the loss.
+  
+  # Input:
+  # nn: A network list containing information about the neural network.
+  # inp: Input data in the rows of a matrix, where each row represents an input sample.
+  # k: Corresponding labels for the input data.
+  # eta: Step size for gradient descent (default is 0.01).
+  # mb: Number of data to randomly sample to compute the gradient (default is 10).
+  # nstep: Number of optimization steps to take (default is 10000).
+  
+  # Output:
+  # An updated network list after training.
+  
+  
+  
   for (i in 1:nstep){
+    
+    # Randomly sample a minibatch of data
     index=sample(dim(inp)[1],mb)
     data_train=inp[index,]
     k_train=k[index]
+    
+    # Extract elements from the network list
     d=nn$d ;b=nn$b ;W=nn$W 
+    
+    # Initialize lists for averaging gradients
     aver_dW=list()
     aver_db=list()
+    
+    
     for (j in 1:length(b)){
+      
+      # Initialize averaged gradients
       aver_dW[j]=list(matrix(0,d[j],d[j+1]))
       aver_db[j]=list(rep(0,d[j+1]))
     }
+    
+    # Compute gradients and accumulate for each sample in the minibatch
     for (s in 1:mb){
+      
+      # Do the forward and backward propagation for each sample in the minibatch
       nn_1=forward(nn,data_train[s,])
       nn_1=backward(nn_1,k_train[s])
+      
+      # Update dW and db
       dW=nn_1$dW ;db=nn_1$db
-      for ( j in 1:length(b)){ 
+      
+      # Accumulate gradients
+      for (j in 1:length(b)){ 
+        
+        # Compute the average gradients for each layer
         aver_dW[j]=list(matrix(unlist(dW[j]),d[j])/mb+matrix(unlist(aver_dW[j]),d[j]))
         aver_db[j]=list(unlist(db[j])/mb+unlist(aver_db[j]))
       }
     }
+    
+    # Update parameters using the averaged gradients
     for (j in 1:length(b)){
+      
+      # Update weights
       W[j]=list(matrix(unlist(W[j]),d[j])-eta*matrix(unlist(aver_dW[j]),d[j]))
+      
+      # Update offsets
       b[j]= list(unlist(b[j])-eta*unlist(aver_db[j]))
     }
+    
+    # Update the network list with the newest parameters
     nn$W=W ;nn$b=b
   }  
+  
+  # Return the updated network list after training
   return(nn)
 }
+
+
+
 predict=function(nn,inp){
   prediction=c()
   for (i in 1:dim(inp)[1]){
