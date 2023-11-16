@@ -1,4 +1,15 @@
-#G36
+# Practical 4   Group 36
+
+# The aim of this project is to write functions to set up a neural network for 
+# classification, and to train it using stochastic gradient descent. More specifically,
+# the project implement a neural network for the classification of iris species 
+# based on their characteristics.
+
+# Five functions can be seen in this project, including 'netup' function for setting
+# up the network architecture, 'forward' and 'backward' functions for performing
+# forward and backward propagation, 'train' function for training the network and 
+# 'predict' function for making predictions on new data.
+
 
 netup = function (d){
   h <- W <- b <- list()
