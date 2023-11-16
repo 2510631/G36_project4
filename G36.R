@@ -47,15 +47,43 @@ netup = function (d){
 }
 
 
-forward= function(nn,inp){
-  W=nn$W ;b=nn$b ;d=nn$d ;h=nn$h
-  h[1]=list(inp)
-  for(i in 1:length(b)){
+forward <- function(nn,inp){
+  # The purpose of the forward function is to perform forward propagation in a 
+  # neural network, computing the node values for each layer based on the input 
+  # values for the first layer.
+  
+  # Input:
+  # nn: A network list containing information about the neural network, as 
+  #     returned by the netup function.
+  # inp: A vector of input values for the first layer.
+  
+  # Output:
+  # nn: An updated network list containing the computed node values for each layer
+  # after forward propagation.
+  
+  
+  # Obtain elements needed from the network list nn.
+  W <- nn$W
+  b <- nn$b
+  d <- nn$d
+  h <- nn$h
+  
+  # Set the input values for the first layer
+  h[1] <- list(inp)
+  for (i in 1:length(b)){
+    
+    # Compute the linear transformation
     z=matrix(unlist(W[i]),d[i+1]) %*% unlist(h[i]) + unlist(b[i])
-    z[z<0]=0
-    h[i+1]=list(z)
+    
+    # Apply the ReLU activation function
+    z[z < 0] <- 0
+    
+    # Update the node values for the next layer
+    h[i+1] <- list(z)
   }
-  return(nn=list(h=h,W=W,b=b,d=d)) 
+  
+  # Return the updated network list
+  return(nn = list(h=h,W=W,b=b,d=d)) 
 }
 
 backward=function(nn,k){ 
