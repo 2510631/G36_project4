@@ -94,8 +94,8 @@ test_data=iris[seq(5,150,5),1:4]
 test_k=label[seq(5,150,5)]
 set.seed(6666)
 nn=train(netup(d),train_data,train_k,nstep=10000)
-nn
+print(nn)
 prediction=predict(nn,test_data)
-prediction
+print(prediction)
 accuracy=mean(prediction==test_k)
-accuracy
+print(accuracy)
